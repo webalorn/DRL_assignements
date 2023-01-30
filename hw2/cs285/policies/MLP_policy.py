@@ -86,11 +86,28 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
     # query the policy with observation(s) to get selected action(s)
     def get_action(self, obs: np.ndarray) -> np.ndarray:
-        # TODO: get this from HW1
+        if len(obs.shape) > 1:
+            observation = obs
+        else:
+            observation = obs[None]
+
+        # DONE return the action that the policy prescribes
+        action = self(ptu.from_numpy(observation))
+        if isinstance(action, distributions.Distribution):
+            action = action.sample()
+        return ptu.to_numpy(action)
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        raise NotImplementedError
+        self.optimizer.zero_grad()
+        predicted_actions = self(observations)
+        if self.discrete:
+            loss = self.criterion(predicted_actions, actions)
+        else:
+            loss = self.criterion(predicted_actions.loc, actions, predicted_actions.scale)
+        loss.backward()
+        self.optimizer.step()
+        return loss
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
