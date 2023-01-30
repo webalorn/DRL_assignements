@@ -1,0 +1,1 @@
+Assignments for the Deep Reinforcement learning course at the IASD master, based on the course [Berkeley CS 285: Deep Reinforcement Learning, Decision Making, and Control](http://rail.eecs.berkeley.edu/deeprlcourse/).
