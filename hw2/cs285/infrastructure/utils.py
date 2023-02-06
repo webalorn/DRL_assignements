@@ -62,7 +62,7 @@ def mean_squared_error(a, b):
 
 ############################################
 ############################################
-@supress_output
+# @supress_output
 def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('rgb_array')):
     # TODO: get this from hw1
     

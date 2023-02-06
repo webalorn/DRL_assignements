@@ -156,7 +156,7 @@ class PGAgent(BaseAgent):
     ################## HELPER FUNCTIONS #################
     #####################################################
 
-    def _discounted_return(self, rewards: torch.tensor) -> torch.tensor:
+    def _discounted_return(self, rewards: np.array) -> np.array:
         """
             Helper function
 
@@ -166,11 +166,11 @@ class PGAgent(BaseAgent):
         """
 
         # DONE: create list_of_discounted_returns
-        gamma_t_r = (self.gamma ** torch.arange(len(rewards))) * rewards
-        discounted_return_sum = torch.sum(gamma_t_r)
-        return torch.ones(len(rewards)) * discounted_return_sum
+        gamma_t_r = (self.gamma ** np.arange(len(rewards))) * rewards
+        discounted_return_sum = np.sum(gamma_t_r)
+        return np.ones(len(rewards)) * discounted_return_sum
 
-    def _discounted_cumsum(self, rewards: torch.tensor) -> torch.tensor:
+    def _discounted_cumsum(self, rewards: np.array) -> np.array:
         """
             Helper function which
             -takes a list of rewards {r_0, r_1, ..., r_t', ... r_T},
@@ -181,8 +181,8 @@ class PGAgent(BaseAgent):
         # HINT: it is possible to write a vectorized solution, but a solution
             # using a for loop is also fine
 
-        gamma_coeffs = (self.gamma ** torch.arange(len(rewards)))
+        gamma_coeffs = (self.gamma ** np.arange(len(rewards)))
         gamma_t_r = gamma_coeffs * rewards
-        reward_sum = torch.sum(gamma_t_r)
+        reward_sum = np.cumsum(gamma_t_r[::-1])[::-1]
         rescaled_sum = reward_sum / gamma_coeffs
         return rescaled_sum

@@ -123,6 +123,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     def forward(self, observation: torch.FloatTensor):
         if self.discrete:
             logits = self.logits_na(observation)
+            logits = torch.nan_to_num(logits, 1./logits.shape[-1])
             action_distribution = distributions.Categorical(logits=logits)
             return action_distribution
         else:

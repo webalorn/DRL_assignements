@@ -26,15 +26,16 @@ def get_run_results(cmd, hp_vals):
     for line in run_out.split('\n'):
         parts = line.split(' : ')
         if len(parts) == 2:
-            print(parts[0], ':', parts[1])
             data[parts[0]] = float(parts[1])
+    for key, val in data.items():
+        print(key, ':', val)
     return data
 
 def optim_objective_1(trial):
     hp_vals = {
         'dsa': trial.suggest_categorical('dsa', ['', '-dsa']),
         'rtg': trial.suggest_categorical('rtg', ['', '-rtg']),
-        'batch_size': trial.suggest_int('batch_size', 100, 20000),
+        'batch_size': trial.suggest_int('batch_size', 100, 10000, log=True),
     }
     return get_run_results(CMD_1, hp_vals)['Eval_AverageReturn']
 
