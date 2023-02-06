@@ -3,7 +3,7 @@ import json
 import optuna
 
 CMD_1 = "\
-python run_hw2.py --env_name CartPole-v0 -n 1 --data_path data_tmp \
+python run_hw2.py --env_name CartPole-v0 -n 100 --data_path data_tmp \
 -b {batch_size} {dsa} {rtg} --exp_name q1_sb_no_rtg_dsa \
 "
 
