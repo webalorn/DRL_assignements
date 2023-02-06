@@ -1,3 +1,6 @@
+import numpy as np
+import torch
+
 from cs285.infrastructure.utils import *
 
 

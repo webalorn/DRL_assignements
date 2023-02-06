@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from tensorboardX.proto.event_pb2 import tensorboardX_dot_proto_dot_summary__pb2
 
 from .base_agent import BaseAgent
