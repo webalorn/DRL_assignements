@@ -27,7 +27,7 @@ data = {}
 
 def get_run_results(cmd, hp_vals):
     print(f"\n===== RUN with {hp_vals=} =====")
-    run_result = subprocess.run(cmd.format(**hp_vals), shell=True, stdout=subprocess.PIPE , stderr=subprocess.PIPE)
+    run_result = subprocess.run(cmd.format(**hp_vals), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     run_out = run_result.stdout.decode('utf-8')
     data = {}
     for line in run_out.split('\n'):
@@ -48,7 +48,7 @@ def optim_objective_1(trial):
 
 def optim_objective_2(trial):
     hp_vals = {
-        'lr': trial.suggest_int('lr', 1+1e-4, 1+0.1, log=True)-1,
+        'lr': trial.suggest_float('lr', 1+1e-4, 1+0.1, log=True)-1,
         'batch_size': trial.suggest_int('batch_size', 1000, 25000, log=True),
     }
     avg_r = get_run_results(CMD_2, hp_vals)['Eval_AverageReturn']
