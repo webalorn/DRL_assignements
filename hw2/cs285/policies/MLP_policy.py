@@ -47,6 +47,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             self.logstd = None
             self.optimizer = optim.Adam(self.logits_na.parameters(),
                                         self.learning_rate)
+            self.criterion = nn.MSELoss()
         else:
             self.logits_na = None
             self.mean_net = ptu.build_mlp(input_size=self.ob_dim,
@@ -61,6 +62,8 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
                 itertools.chain([self.logstd], self.mean_net.parameters()),
                 self.learning_rate
             )
+            self.criterion = nn.GaussianNLLLoss()
+
 
         if nn_baseline:
             self.baseline = ptu.build_mlp(
@@ -86,16 +89,19 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
     # query the policy with observation(s) to get selected action(s)
     def get_action(self, obs: np.ndarray) -> np.ndarray:
+        # TODO: get this from HW1
         if len(obs.shape) > 1:
             observation = obs
         else:
             observation = obs[None]
 
-        # DONE return the action that the policy prescribes
+        # TODO return the action that the policy prescribes
         action = self(ptu.from_numpy(observation))
         if isinstance(action, distributions.Distribution):
             action = action.sample()
+
         return ptu.to_numpy(action)
+
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
@@ -150,23 +156,29 @@ class MLPPolicyPG(MLPPolicy):
             # sum_{t=0}^{T-1} [grad [log pi(a_t|s_t) * (Q_t - b_t)]]
         # HINT2: you will want to use the `log_prob` method on the distribution returned
             # by the `forward` method
-        # HINT3: don't forget that `optimizer.step()` MINIMIZES a loss
-        # HINT4: use self.optimizer to optimize the loss. Remember to
-            # 'zero_grad' first
 
-        TODO
+        self.optimizer.zero_grad()
+        action_distribution = self.forward(observations)
+        log_p = action_distribution.log_prob(actions)
+        loss = - torch.mul(log_p, advantages).mean() # using - because we use gradient ascent to maximize the expectation
+        loss.backward()
+        self.optimizer.step()
 
         if self.nn_baseline:
             ## TODO: update the neural network baseline using the q_values as
             ## targets. The q_values should first be normalized to have a mean
             ## of zero and a standard deviation of one.
 
-            ## HINT1: use self.baseline_optimizer to optimize the loss used for
-                ## updating the baseline. Remember to 'zero_grad' first
-            ## HINT2: You will need to convert the targets into a tensor using
+            ## Note: You will need to convert the targets into a tensor using
                 ## ptu.from_numpy before using it in the loss
 
-            TODO
+            q_values = ptu.from_numpy(q_values)
+            q_values = (q_values - torch.mean(q_values)).divide(torch.std(q_values))
+            self.baseline_optimizer.zero_grad()
+            pred = self.baseline(observations)
+            baseline_loss = self.baseline_loss(pred, q_values)
+            baseline_loss.backward()
+            self.baseline_optimizer.step()
 
         train_log = {
             'Training Loss': ptu.to_numpy(loss),

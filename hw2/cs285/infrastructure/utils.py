@@ -1,8 +1,7 @@
+import os, contextlib
 import numpy as np
 import time
 import copy
-
-import os, contextlib
 
 def supress_output(func):
     def wrapper(*a, **ka):
@@ -63,10 +62,10 @@ def mean_squared_error(a, b):
 
 ############################################
 ############################################
-
 @supress_output
-def sample_trajectory(env, policy, max_path_length, render=False):
-
+def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('rgb_array')):
+    # TODO: get this from hw1
+    
     # initialize env for the beginning of a new rollout
     ob = env.reset() # HINT: should be the output of resetting the env
 
@@ -96,7 +95,7 @@ def sample_trajectory(env, policy, max_path_length, render=False):
         next_obs.append(ob)
         rewards.append(rew)
 
-        # DONE end the rollout if the rollout ended
+        # TODO end the rollout if the rollout ended
         # HINT: rollout can end due to done, or due to max_path_length
         rollout_done = (done or steps==max_path_length) # HINT: this is either 0 or 1
         terminals.append(rollout_done)
@@ -106,10 +105,12 @@ def sample_trajectory(env, policy, max_path_length, render=False):
 
     return Path(obs, image_obs, acs, rewards, next_obs, terminals)
 
-def sample_trajectories(env, policy, min_timesteps_per_batch, max_path_length, render=False):
+
+
+def sample_trajectories(env, policy, min_timesteps_per_batch, max_path_length, render=False, render_mode=('rgb_array')):
+    # TODO: get this from hw1
     """
         Collect rollouts until we have collected min_timesteps_per_batch steps.
-
         DONE implement this function
         Hint1: use sample_trajectory to get each path (i.e. rollout) that goes into paths
         Hint2: use get_pathlength to count the timesteps collected in each path
@@ -124,11 +125,12 @@ def sample_trajectories(env, policy, min_timesteps_per_batch, max_path_length, r
 
     return paths, timesteps_this_batch
 
-def sample_n_trajectories(env, policy, ntraj, max_path_length, render=False):
+def sample_n_trajectories(env, policy, ntraj, max_path_length, render=False, render_mode=('rgb_array')):
+    # TODO: get this from hw1
     """
         Collect ntraj rollouts.
 
-        DONE implement this function
+        TODO implement this function
         Hint1: use sample_trajectory to get each path (i.e. rollout) that goes into paths
     """
     paths = []
@@ -137,7 +139,6 @@ def sample_n_trajectories(env, policy, ntraj, max_path_length, render=False):
       paths.append(sample_trajectory(env, policy, max_path_length, render=render))
 
     return paths
-
 
 ############################################
 ############################################
