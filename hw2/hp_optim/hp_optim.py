@@ -41,7 +41,7 @@ data = {}
 #     data = json.load(f)
 
 def get_run_results(cmd, hp_vals):
-    print(f"\n===== RUN with {hp_vals=} =====")
+    print(f"\n===== RUN with {hp_vals=} =====", flush=True)
     run_result = subprocess.run(cmd.format(**hp_vals), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     run_out = run_result.stdout.decode('utf-8')
     data = {}
@@ -50,7 +50,7 @@ def get_run_results(cmd, hp_vals):
         if len(parts) == 2:
             data[parts[0]] = float(parts[1])
     for key, val in data.items():
-        print(key, ':', val)
+        print(key, ':', val, flush=True)
     return data
 
 def optim_objective_1(trial):
@@ -67,7 +67,7 @@ def optim_objective_2(trial):
         'batch_size': trial.suggest_int('batch_size', 1000, 25000, log=True),
     }
     avg_r = get_run_results(CMD_2, hp_vals)['Eval_AverageReturn']
-    print("Real return:", avg_r)
+    print("Real return:", avg_r, flush=True)
 
     BATCH_COEFF = 1 # 1 for equilibrium, >1 for smaller batch_size, <1 for larger lr
     avg_r += math.log(hp_vals['lr'])
@@ -97,7 +97,7 @@ def main_optuna():
 
     print()
     print("BEST PARAMS")
-    print(study.best_params)
+    print(study.best_params, flush=True)
 
 def main_gridsearch():
     cmd = CMD_4
@@ -114,7 +114,7 @@ def main_gridsearch():
     best_return, best_hps, i_best = None, None, None
     for i_cur, hp_take_val in enumerate(itertools.product(*[hp_values[k] for k in keys])):
         hps = {k: v for k, v in zip(keys, hp_take_val)}
-        print(f"************ Experiment {i_cur} with parameters {hps} ************")
+        print(f"************ Experiment {i_cur} with parameters {hps} ************", flush=True)
         data = get_run_results(cmd, hps)
         val_return = data['Eval_AverageReturn']
         if best_return is None or val_return > best_return:
@@ -123,7 +123,7 @@ def main_gridsearch():
         print()
         print(f"Return value for iteration {i_cur} is {val_return}")
         print(f"Current best is iteration {i_best} with return {best_return} and configuration {best_hps}")
-        print()
+        print(flush=True)
 
 
 if __name__ == "__main__":
