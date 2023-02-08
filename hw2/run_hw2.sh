@@ -48,14 +48,14 @@
 
 # Experiment 4
 
-python run_hw2.py --env_name HalfCheetah-v2 --ep_len 150 \
+python run_hw2.py --env_name HalfCheetah-v4 --ep_len 150 \
     --discount 0.95 -n 100 -l 2 -s 32 -b 10000 -lr 0.005 -rtg --nn_baseline \
     --exp_name q4_search_b10000_lr0.005_rtg_nnbaseline
 
 # Experiment 5
 
 # python run_hw2.py \
-#     --env_name Hopper-v2 --ep_len 1000 \
+#     --env_name Hopper-v4 --ep_len 1000 \
 #     --discount 0.99 -n 300 -l 2 -s 32 -b 2000 -lr 0.001 \
 #     --reward_to_go --nn_baseline --action_noise_std 0.5 --gae_lambda 0 \
 #     --exp_name q5_b2000_r0.001_lambda0

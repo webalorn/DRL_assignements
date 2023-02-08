@@ -16,14 +16,14 @@ python run_hw2.py --env_name InvertedPendulum-v4 --data_path data_tmp \
 "
 
 CMD_4 = "\
-python run_hw2.py --env_name HalfCheetah-v2 --ep_len 150 --data_path data_q4 \
+python run_hw2.py --env_name HalfCheetah-v4 --ep_len 150 --data_path data_q4 \
     --discount 0.95 -n 100 -l 2 -s 32 -b {batch_size} -lr {lr} -rtg --nn_baseline \
     --exp_name q4_search_b{batch_size}_lr{lr}_rtg_nnbaseline \
 "
 
 CMD_5 = "\
     python run_hw2.py  \
-    --env_name Hopper-v2 --ep_len 1000 \
+    --env_name Hopper-v4 --ep_len 1000 \
     --discount 0.99 -n 300 -l 2 -s 32 -b 2000 -lr 0.001 \
     --reward_to_go --nn_baseline --action_noise_std 0.5 --gae_lambda {lambda} \
     --exp_name q5_b2000_r0.001_lambda{lambda}\
