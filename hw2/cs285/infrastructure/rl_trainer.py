@@ -53,7 +53,7 @@ class RL_Trainer(object):
         else:
             render_mode = 'rgb_array'
         self.env = gym.make(self.params['env_name'], render_mode=render_mode)
-        self.env.seed(seed)
+        self.env.reset(seed=seed)
 
         # Add noise wrapper
         if params['action_noise_std'] > 0:
