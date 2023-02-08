@@ -99,7 +99,8 @@ class PGAgent(BaseAgent):
             ## TODO: values were trained with standardized q_values, so ensure
                 ## that the predictions have the same mean and standard deviation as
                 ## the current batch of q_values
-            values = values_unnormalized * np.std(q_values) + np.mean(q_values)
+            values = (values_unnormalized - np.mean(values_unnormalized)) / max(np.std(values_unnormalized), 1e-6)
+            values = values * np.std(q_values) + np.mean(q_values)
 
             if self.gae_lambda is not None:
                 ## append a dummy T+1 value for simpler recursive calculation
@@ -119,8 +120,11 @@ class PGAgent(BaseAgent):
                     ## HINT: use terminals to handle edge cases. terminals[i]
                         ## is 1 if the state is the last in its trajectory, and
                         ## 0 otherwise.
-                    advantages[i] = rews[i] + self.gamma * values[i+1] - values[i]
-                    advantages[i] = advantages[i] + self.gamma * self.gae_lambda * advantages[i+1]
+                    if terminals[i]:
+                        advantages[i] = rews[i] - values[i]
+                    else:
+                        advantages[i] = rews[i] + self.gamma * values[i+1] - values[i]
+                        advantages[i] = advantages[i] + self.gamma * self.gae_lambda * advantages[i+1]
 
                 # remove dummy advantage
                 advantages = advantages[:-1]
