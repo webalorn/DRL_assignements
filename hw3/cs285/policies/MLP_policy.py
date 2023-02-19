@@ -99,7 +99,6 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
         return ptu.to_numpy(action)
 
     # update/train this policy
-    # update/train this policy
     def update(self, observations, actions, **kwargs):
         self.optimizer.zero_grad()
         predicted_actions = self(observations)
@@ -140,5 +139,16 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
 
 class MLPPolicyAC(MLPPolicy):
     def update(self, observations, actions, adv_n=None):
-        # TODO: update the policy and return the loss
+        # DONE: update the policy and return the loss
+        observations = ptu.from_numpy(observations)
+        actions = ptu.from_numpy(actions)
+        advantages = ptu.from_numpy(adv_n)
+
+        self.optimizer.zero_grad()
+        action_distribution = self.forward(observations)
+        log_p = action_distribution.log_prob(actions)
+        loss = - torch.mul(log_p, advantages).mean() # using - because we use gradient ascent to maximize the expectation
+        loss.backward()
+        self.optimizer.step()
+
         return loss.item()

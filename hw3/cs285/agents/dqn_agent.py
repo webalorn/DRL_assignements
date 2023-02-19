@@ -53,10 +53,10 @@ class DQNAgent(object):
         # DONE use epsilon greedy exploration when selecting action
         perform_random_action = np.random.random() < eps or self.t < self.learning_starts
         if perform_random_action:
-            # HINT: take random action 
+            # HINT: take random action (can sample from self.env.action_space)
                 # with probability eps (see np.random.random())
                 # OR if your current step number (see self.t) is less that self.learning_starts
-            action = np.random.randint(self.num_actions)
+            action = self.env.action_space.sample()
         else:
             # HINT: Your actor will take in multiple previous observations ("frames") in order
                 # to deal with the partial observability of the environment. Get the most recent 
@@ -64,7 +64,7 @@ class DQNAgent(object):
                 # and then use those observations as input to your actor. 
             # DONE
             obs = self.replay_buffer.encode_recent_observation()
-            action = self.actor(obs)
+            action = self.actor.get_action(obs)
         
         # DONE take a step in the environment using the action from the policy
         # HINT1: remember that self.last_obs must always point to the newest/latest observation
@@ -72,7 +72,6 @@ class DQNAgent(object):
             #obs, reward, done, info = env.step(action)
         obs, reward, done, _ = self.env.step(action)
         self.last_obs = obs
-
 
         # DONE store the result of taking this action into the replay buffer
         # HINT1: see your replay buffer's `store_effect` function
@@ -82,7 +81,6 @@ class DQNAgent(object):
         # DONE if taking this step resulted in done, reset the env (and the latest observation)
         if done:
             self.last_obs = self.env.reset()
-
 
     def sample(self, batch_size):
         if self.replay_buffer.can_sample(self.batch_size):
@@ -105,7 +103,7 @@ class DQNAgent(object):
             # DONE update the target network periodically 
             # HINT: your critic already has this functionality implemented
             if self.num_param_updates % self.target_update_freq == 0:
-                self.update_target_network()
+                self.critic.update_target_network()
 
             self.num_param_updates += 1
 

@@ -63,7 +63,6 @@ class BootstrappedContinuousCritic(nn.Module, BaseCritic):
 
             arguments:
                 ob_no: shape: (sum_of_path_lengths, ob_dim)
-                ac_na: length: sum_of_path_lengths. The action taken at the current step.
                 next_ob_no: shape: (sum_of_path_lengths, ob_dim). The observation after taking one step forward
                 reward_n: length: sum_of_path_lengths. Each element in reward_n is a scalar containing
                     the reward for each timestep
@@ -86,5 +85,16 @@ class BootstrappedContinuousCritic(nn.Module, BaseCritic):
         #       to 0) when a terminal state is reached
         # HINT: make sure to squeeze the output of the critic_network to ensure
         #       that its dimensions match the reward
+        for _ in range(self.num_target_updates):
+          V_s1 = self.forward_np(next_ob_no)
+          y = reward_n + self.gamma * V_s1 * (1-terminal_n)
+
+          for _ in range(self.num_grad_steps_per_target_update):
+            V_s = self.forward_np(ob_no)
+            loss = self.loss(ptu.from_numpy(V_s), ptu.from_numpy(y))
+
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
 
         return loss.item()
