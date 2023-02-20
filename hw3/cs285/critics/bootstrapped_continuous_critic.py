@@ -90,8 +90,8 @@ class BootstrappedContinuousCritic(nn.Module, BaseCritic):
           y = reward_n + self.gamma * V_s1 * (1-terminal_n)
 
           for _ in range(self.num_grad_steps_per_target_update):
-            V_s = self.forward_np(ob_no)
-            loss = self.loss(ptu.from_numpy(V_s), ptu.from_numpy(y))
+            V_s = self.forward(ptu.from_numpy(ob_no))
+            loss = self.loss(V_s, ptu.from_numpy(y))
 
             self.optimizer.zero_grad()
             loss.backward()

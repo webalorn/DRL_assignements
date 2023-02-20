@@ -43,7 +43,7 @@ class ACAgent(BaseAgent):
         for step in range(self.agent_params['num_critic_updates_per_agent_update']):
           loss['Critic_Loss'] = self.critic.update(ob_no, ac_na, next_ob_no, re_n, terminal_n)
 
-        advantage = self.trainestimate_advantage(ob_no, next_ob_no, re_n, terminal_n)
+        advantage = self.estimate_advantage(ob_no, next_ob_no, re_n, terminal_n)
 
         for step in range(self.agent_params['num_actor_updates_per_agent_update']):
           loss['Actor_Loss'] = self.actor.update(ob_no, ac_na, advantage)

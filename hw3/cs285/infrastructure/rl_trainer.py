@@ -146,17 +146,17 @@ class RL_Trainer(object):
 
             # decide if videos should be rendered/logged at this iteration
             if itr % self.params['video_log_freq'] == 0 and self.params['video_log_freq'] != -1:
-                self.logvideo = True
+                self.log_video = True
             else:
-                self.logvideo = False
+                self.log_video = False
 
             # decide if metrics should be logged
             if self.params['scalar_log_freq'] == -1:
-                self.logmetrics = False
+                self.log_metrics = False
             elif itr % self.params['scalar_log_freq'] == 0:
-                self.logmetrics = True
+                self.log_metrics = True
             else:
-                self.logmetrics = False
+                self.log_metrics = False
 
             # collect trajectories, to be used for training
             if isinstance(self.agent, DQNAgent):
@@ -189,7 +189,7 @@ class RL_Trainer(object):
             all_logs = self.train_agent()
 
             # log/save
-            if self.logvideo or self.logmetrics:
+            if self.log_video or self.log_metrics:
                 # perform logging
                 print('\nBeginning logging procedure...')
                 if isinstance(self.agent, DQNAgent):
@@ -227,17 +227,17 @@ class RL_Trainer(object):
 
             # decide if videos should be rendered/logged at this iteration
             if itr % self.params['video_log_freq'] == 0 and self.params['video_log_freq'] != -1:
-                self.logvideo = True
+                self.log_video = True
             else:
-                self.logvideo = False
+                self.log_video = False
 
             # decide if metrics should be logged
             if self.params['scalar_log_freq'] == -1:
-                self.logmetrics = False
+                self.log_metrics = False
             elif itr % self.params['scalar_log_freq'] == 0:
-                self.logmetrics = True
+                self.log_metrics = True
             else:
-                self.logmetrics = False
+                self.log_metrics = False
 
             use_batchsize = self.params['batch_size']
             if itr==0:
@@ -280,7 +280,7 @@ class RL_Trainer(object):
             all_logs = self.train_agent()
 
             # log/save
-            if self.logvideo or self.logmetrics:
+            if self.log_video or self.log_metrics:
                 # perform logging
                 print('\nBeginning logging procedure...')
                 self.perform_sac_logging(itr, episode_stats, eval_policy, train_video_paths, all_logs)
@@ -334,7 +334,7 @@ class RL_Trainer(object):
         return paths, envsteps_this_batch, train_video_paths
 
     def train_agent(self):
-        print('\nTraining agent using sampled data from replay buffer...')
+        #print('\nTraining agent using sampled data from replay buffer...')
         all_logs = []
         for train_step in tqdm(range(self.params['num_agent_train_steps_per_iter'])):
 
@@ -399,7 +399,7 @@ class RL_Trainer(object):
         eval_paths, eval_envsteps_this_batch = utils.sample_trajectories(self.env, eval_policy, self.params['eval_batch_size'], self.params['ep_len'])
 
         # save eval rollouts as videos in tensorboard event file
-        if self.logvideo and train_video_paths != None:
+        if self.log_video and train_video_paths != None:
             print('\nCollecting video rollouts eval')
             eval_video_paths = utils.sample_n_trajectories(self.env, eval_policy, MAX_NVIDEO, MAX_VIDEO_LEN, True)
 
@@ -413,7 +413,7 @@ class RL_Trainer(object):
         #######################
 
         # save eval metrics
-        if self.logmetrics:
+        if self.log_metrics:
             # returns, for logging
             train_returns = [path["reward"].sum() for path in paths]
             eval_returns = [eval_path["reward"].sum() for eval_path in eval_paths]
@@ -467,7 +467,7 @@ class RL_Trainer(object):
         eval_paths, eval_envsteps_this_batch = utils.eval_trajectories(self.env, eval_policy, self.params['eval_batch_size'], self.params['ep_len'])
 
         # save eval rollouts as videos in tensorboard event file
-        if self.logvideo and train_video_paths != None:
+        if self.log_video and train_video_paths != None:
             print('\nCollecting video rollouts eval')
             eval_video_paths = utils.sample_n_trajectories(self.env, eval_policy, MAX_NVIDEO, MAX_VIDEO_LEN, True)
 
@@ -481,7 +481,7 @@ class RL_Trainer(object):
         #######################
 
         # save eval metrics
-        if self.logmetrics:
+        if self.log_metrics:
             # returns, for logging
             eval_returns = [eval_path["reward"].sum() for eval_path in eval_paths]
 
