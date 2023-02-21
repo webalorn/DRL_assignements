@@ -1,4 +1,4 @@
-gym[atari]==0.25.2
+gym[atari]==0.20
 mujoco-py>=2.0.2.2
 tensorboard>=2.3.0
 tensorboardX>=1.8
@@ -10,3 +10,7 @@ torch>=1.5.1
 opencv-python>=4.4.0.42
 ipdb>=0.13.3
 box2d-py
+glfw
+mujoco
+mujoco-py
+gym[box2d]==0.20

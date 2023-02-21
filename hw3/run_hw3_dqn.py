@@ -1,6 +1,8 @@
 import os
 import time
 
+from torch import nn
+
 from cs285.infrastructure.rl_trainer import RL_Trainer
 from cs285.agents.dqn_agent import DQNAgent
 from cs285.infrastructure.dqn_utils import get_env_kwargs
@@ -36,6 +38,21 @@ class Q_Trainer(object):
             eval_policy = self.rl_trainer.agent.actor,
         )
 
+def create_custom_lander_q_network(depth, width):
+    assert depth >= 1 and width >= 1
+    def q_function_maker(ob_dim, num_actions):
+        layers = []
+        for i_layer in range(depth):
+            layers.append(nn.Linear(
+                ob_dim if i_layer == 0 else width,
+                width if i_layer < depth-1 else num_actions
+            ))
+            if i_layer < depth-1:
+                layers.append(nn.ReLU())
+        print(layers)
+        return nn.Sequential(*layers)
+    return q_function_maker
+
 def main():
 
     import argparse
@@ -64,11 +81,20 @@ def main():
 
     parser.add_argument('--save_params', action='store_true')
 
+    parser.add_argument('--size', type=int, default=1000)
+
+    parser.add_argument('--q_net_depth', type=int, default=3)
+    parser.add_argument('--q_net_width', type=int, default=64)
+
     args = parser.parse_args()
 
     # convert to dictionary
     params = vars(args)
     params['video_log_freq'] = -1 # This param is not used for DQN
+    if params['env_name'] == 'LunarLander-v3':
+        params['q_func'] = create_custom_lander_q_network(args.q_net_depth, args.q_net_width)
+    else:
+        assert (args.q_net_depth, args.q_net_width) == (3, 64), "Args only used with LunarLander"
     ##################################
     ### CREATE DIRECTORY FOR LOGGING
     ##################################
